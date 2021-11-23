@@ -1,0 +1,44 @@
+Content-Type: multipart/mixed; boundary="//"
+MIME-Version: 1.0
+
+--//
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+/bin/echo "Hello First" >> /tmp/testfile.txt
+cloud_final_modules:
+- [scripts-user, always]
+
+--//
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="userdata.txt"
+
+#!/bin/bash
+# Variables
+export INSTANCE_ID=`curl http://169.254.169.254/latest/meta-data/instance-id`
+export REGION=`curl http://169.254.169.254/latest/meta-data/placement/region`
+export HOME=/home/ubuntu
+
+# Attach EBS for backups
+sudo aws ec2 attach-volume --device /dev/sdf --instance-id $INSTANCE_ID --volume-id vol-094ec8741452d8ba7 --region $REGION
+
+# Mount EBS
+sudo mount /dev/nvme1n1 $HOME/backups
+
+# Install/Update Steam server
+$HOME/SteamCMD/steamcmd.sh +login anonymous +force_install_dir $HOME/Steam +app_update 896660 validate +exit
+
+# Cron jobs
+sudo crontab -r
+(crontab -l; echo "15 * * * * $HOME/create-backup.sh") | crontab -
+
+# start server
+cd $HOME/Steam
+sudo tmux new-session -s "server" ./my_start_server.sh
+
+--//--

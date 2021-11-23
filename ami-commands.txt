@@ -1,6 +1,7 @@
 # Install dependencies
 sudo apt update
 sudo apt -y dist-upgrade
+sudo apt -y install awscli
 sudo apt-get -y install lib32gcc1
 sudo apt-get -y install libsdl2-2.0-0
 # Install Steam tar
@@ -11,4 +12,6 @@ $HOME/SteamCMD/steamcmd.sh +login anonymous +force_install_dir $HOME/Steam +app_
 # Create copy of start_server.sh
 cd $HOME/Steam/
 cp start_server.sh my_start_server.sh
-
+# Move backup scripts into HOME
+# Update userdata.txt
+# Stop instance and create AMI

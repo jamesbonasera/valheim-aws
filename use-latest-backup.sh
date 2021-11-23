@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORLDS=/home/ubuntu/.config/unity3d/IronGate/Valheim
+WORLDS=$HOME/.config/unity3d/IronGate/Valheim
 NEW_BACKUP=$(ls -t $HOME/backups | head -n1)
 
 # Move newest backup into worlds
